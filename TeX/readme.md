@@ -185,3 +185,7 @@ LaTeX Workshop は他にもたくさん機能を持っています。例えば�
   - スニペットパネル
 
 などがあります。
+
+## 参考文献
+
+https://qiita.com/rainbartown/items/d7718f12d71e688f3573
