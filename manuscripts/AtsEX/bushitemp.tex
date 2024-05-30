@@ -76,6 +76,8 @@
 % ルビ
 \usepackage{okumacro}
 
+\usepackage{ulem}
+
 % 書きたい内容に合わせてお好きなパッケージを導入していただいて構いませんが、外部パッケージは提出時に必ず合わせて提出してください。
 % また、そのパッケージを使用している部分には必ずコメントをしてください。
 
@@ -102,36 +104,36 @@
 DirectXにまで干渉できるほど拡張性は高く、知識と技術さえあれば基本的に何でも作れてしまうスゴい代物。\\
 文化祭で公開したゲーム「MetroDrive 日比谷編」も本体にはこれを使用している。\\
 \end{itembox}
-お察しかとは思いますが、そこそこの程度のC\#の知識は必要です。（Unityが満足に使えるレベルなら十分）\\
+　お察しかとは思いますが、そこそこの程度のC\#の知識は必要です。（Unityが満足に使えるレベルなら十分）\\
 あとは、要所要所でUnityの類似機能を紹介しながらなので、Unity勢にはわかりやすいかもしれません。\\
+BVEはWindowsソフトなのでMacでは動かない点はご注意。(プラグインを使うとWineを使っても)
 \part*{1.主要機能の説明}
 まずは主要機能について軽く説明します。\\
-読み飛ばして頂いても構いません。\\
+（読み飛ばして頂いても構いません。）\\
 \textbf{PluginMain}\\
-PluginMainはUnityでいうところのStart関数（厳密には違う）です。\\
+　PluginMainはUnityでいうところのStart関数（厳密には違う）です。\\
 ここで最初に一回呼び出したいものやイベントの登録などを行います。
 \begin{lstlisting}[caption=Sample]
 public MapPluginMain(PluginBuilder builder) : base(builder)
 \end{lstlisting}
 と宣言することで使用可能になります。\\
 \textbf{Dispose}\\
-シナリオの終了時に呼び出す関数です。(Unityで言えばOnApplicationQuit()が近い....かも)\\
+　シナリオの終了時に呼び出す関数です。(Unityで言えばOnApplicationQuit()が近い....かも)\\
 イベントの購読解除とかに使います。\\
 \textbf{TickResult}\\
-UnityのUpdate関数にあたるもので、シナリオが読み込まれた後毎フレーム呼び出されるものです。\\
+　UnityのUpdate関数にあたるもので、シナリオが読み込まれた後毎フレーム呼び出されるものです。\\
 詳細は後述しますが、BveHacker.Scenarioなどシナリオの実行中にしか読めない値はここでしか読めません。\\
 基本的にはフレーム間で変わらないかもしれないもの（速度など）は毎フレーム代入するスタンスでOKです。\\
 \\
-
 \part*{2.プラグインを作ろう}
-では、実際にプラグインを制作していきましょう。\\
-今回の最終的な目標は\textbf\textit{「DirectXでマスコンの値、ブレーキの値を表示する」こと}とします。\\
-{\large 環境設定}
-https://github.com/stop-pattern/AtsExCsTemplate を<code>→Download zipよりZipで落とし、任意の場所に展開しましょう。\\
+　では、実際にプラグインを制作していきましょう。\\
+今回の最終的な目標は\textbf\textit{「DirectXで力行ノッチの値、ブレーキノッチの値を表示する」こと}とします。\\
+{\large 環境設定}\\
+　github.com/stop-pattern/AtsExCsTemplate をcode→Download zipよりZipで落とし、任意の場所に展開しましょう。\\
 次に、Visual Stadioをインストールします。（ここらへんはアップデートのたびにやり方が変わりそうなので、適当にググってください）\\
 ワークロードは「.NET デスクトップ開発」をインストールすればOKです。\\
 インストールが済んだらMapPlugin\textbackslash AtsExCsTemplate.sln を開いてください。\\
-開いたら検索>nugetパッケージの管理 より、「プレリリースを含める」にチェックを付け、参照>AtsEXと検索してAtsEx.CoreExtionsとAtsEx.PluginHostをインストールしてください。\\
+開いたら検索/nugetパッケージの管理 より、「プレリリースを含める」にチェックを付け、参照>AtsEXと検索してAtsEx.CoreExtionsとAtsEx.PluginHostをインストールしてください。\\
 AtsEXは執筆中の現在(2024-05-07時点)あくまで正式リリース\textbf{候補}なので、最新バージョンかどうかはhttps://www.okaoka-depot.com/AtsEX/download/ からご確認ください。（今時点ではver1.00-RC8が最新バージョンです。）\\
 ではMapPlugin.csを編集していきましょう。まずは最低限のコードでビルドできるか確認してみます。
 \begin{lstlisting}[caption=MapPlugin.cs]
@@ -169,9 +171,9 @@ internal class MapPluginMain : AssemblyPluginBase
   }
 }
 \end{lstlisting}
-以上のコードは特に意味がないものなのですが、一応これをベースとしてやっていきます。\\
+　以上のコードは特に意味がないものなのですが、一応これをベースとしてやっていきます。\\
 これをコピペしても多分エラーは出ないと思いますが、もし出たら後述の「トラブルシューティング」をご確認ください。\\
-では、ビルドしていきましょう。といっても、やることは簡単でctrl+Bをクリックするだけです。\\
+では、ビルドしていきましょう。といっても、やることは簡単でctrl+Bを押すだけです。\\
 コードのウインドウの左下に「問題は見つかりませんでした」と表示されていれば成功するはずです。\\
 するとカレントディレクトリ\textbackslash bin\textbackslash Debug\textbackslash net48の中にプラグインのdllが生成されたと思います。\\
 もし指定のディレクトリの中になければ、「プロジェクト」「デバッグ」と書いてある箇所の下を「debug」「AnyCPU」と変更します。\\
@@ -197,8 +199,8 @@ namespace BuildSample
 }
 \end{lstlisting}
 %（以下、MapPluginMain(PluginBuilder builder) : base(builder)内をPluginMain、Dispose()内をDipose、TickResult()内をTickResultとして表記します）。\\
-では、実際にコードを編集していきます。\\
-今回のゴールはマスコン/ブレーキの値の表示なので、まずはそれらの値を取得するところから始めましょう。\\
+　では、実際にコードを編集していきます。\\
+今回のゴールは力行（マスコン）/ブレーキの値の表示なので、まずはそれらの値を取得するところから始めましょう。\\
 結論から言うと、
 \begin{lstlisting}[caption= MapPlugin.cs]
 using System;
@@ -224,8 +226,10 @@ namespace DrawNotch;
 \end{lstlisting}
 となるのですが、おそらく実際にはこの値のみを使ってプラグインを作ることは少ないと思うので、その他の機能についても簡潔に触れておこうかと思います。\\
 (といっても、機能が多すぎるために特に分かりづらいもののみですが...)
-他の機能についてはオブジェクトブラウザーを使うのがいいのですが、やっぱり公式のDiscord鯖で質問しないとわからないことも多々あります(筆者のプログラミング能力が低いだけかも)\\
-\begin{lstlisting}[caption= MapPlugin.cs]
+　他の機能についてはオブジェクトブラウザーを使うのがいいのですが、やっぱり公式のDiscord鯖で質問しないとわからないことも多々あります(筆者のプログラミング能力が低いだけかも)\\
+okaoka-depot.com/AtsEX/wiki/こちらからどうぞ。\\
+\sout{質問しすぎるとシカトされます}\\
+\begin{lstlisting}[caption= 機能リスト]
 //BveTypes.ClassWrappers\Stationに入っている値(通過時刻とか)を参照する場合
 var station = BveHacker.Scenario.Route.Stations[(調べたい駅のインデックス、変数も可能)] as Station;
 if (station == null){
@@ -235,7 +239,66 @@ if (station == null){
 }
 //駅インデックス
 index = BveHacker.Scenario.Route.Stations.CurrentIndex + 1;//停車時は前駅のインデックスが代入され、開始時にindexがマイナスになることを避けるために+1している
+//地上子通過イベントの登録(PluginMain内)
+Native.BeaconPassed += new BeaconPassedEventHandler((呼び出したい関数名));
+//地上子通過イベントの購読解除(Dispose内)
+Native.BeaconPassed -= new BeaconPassedEventHandler((呼び出したい関数名));
+//地上子イベント発生時に呼び出す関数
+public void BeaconPassed(BeaconPassedEventArgs e)//e.Typeで地上子のタイプを指定できる（読み出し）
+{
+    switch (e.Type)//メトロ総合プラグインの場合
+    {
+        case 10://信号0
+            atc = 0;
+            break;
+        case 19://ATC45
+            atc = 45;
+            break;
+    }
+  //他にも e.SignalIndex(int)で対となる閉塞のインデックス、e.Distance(float)で対となる閉塞までの距離を取得可能。
+}
 \end{lstlisting}
+　こんなもんでしょうか（長くてすみません）\\
+正直AtsEXはできることが多すぎる上、Unityほど文献が充実していないので、繰り返になりますが公式Discordの利用がおすすめです（ちなみに、設立は\textbf{俺}が提案しました。えらい。）\\
+余談にはなりますが、個人的にUnityが使いやすいのはそういう所だったりします。GodotやUnrealなどは文献的な面でUnity程初心者が色々できるような代物ではないのかな～と思います。(知らんけど)\\
+　では開発の方に戻りましょう。\\
+以上では力行ノッチとブレーキノッチの値を取得しました。今度は、それが実行できているかを確認してみましょう。\\
+以下のコードをPluginMain内に記述してください。\\
+\begin{lstlisting}[caption= MapPluginMain()]
+if (!System.Diagnostics.Debugger.IsAttached)
+{System.Diagnostics.Debugger.Launch();}
+\end{lstlisting}
+これはデバッガーを起動するためのもので、VisualStadioがインストールされてる場合は自動的にデバッガーが起動します。\\
+勿論Pluginだけでは動作しないので、BveTrainism5.8(とDirectX9.0cRunTime,.NET Framework3.5),AtsEXをインストールしましょう。（ここはあまり関係ないので省略）\\
+　次に車両を用意します。（ここもググること前提で省略します。）\\
+Mapファイルは以下のようにします。\\
+\begin{lstlisting}[caption= Map.txt]
+BveTs Map 2.02
+include '[[AtsEx::NOMPI]] このマップでは AtsEX マッププラグインを使用しています。正常動作には AtsEX のインストールが必要です。詳細は https://automatic9045.github.io をご覧ください。';
+include '[[AtsEx::NOMPI]] This map requires to install AtsEX to execute map plugins. For more information, visit https://automatic9045.github.io';
+include '<AtsEx::USEATSEX>';
+include '<AtsEx::READDEPTH>1';
+include '<AtsEx::MapPluginUsing>MapPluginUsing.xml';
+\end{lstlisting}
+（ご自身のMapに組み込む場合は上4行をメインのMapファイルの最上段に組み込んで下さい）\\
+次にMapPluginUsing.xmlを作成してMap.txtと同ディレクトリに置きます。\\
+内容は以下の通りです。\\
+\begin{lstlisting}[caption= MapPluginUsing.xml]
+<?xml version="1.0" encoding="utf-8" ?>
+<AtsExPluginUsing xmlns="http://automatic9045.github.io/ns/xmlschemas/AtsExPluginUsingXmlSchema.xsd">
+  <Assembly Path="（プラグインdllへのパス）" />
+</AtsExPluginUsing>
+\end{lstlisting}
+これで動くはずです。（動かない場合は、パスを確認して下さい。）\\
+　次に、ブレークポイントの設定をします。\\
+MapPlugin.csに戻って下さい。そして、コードの左側をクリックしてpower = Native.Handles.Power.Notch;の左にブレークポイントを設定して下さい。\\
+では、実際にBVEを起動し、シナリオを読み込んで下さい。（上に同じく）\\
+すると、以下画像のようにデバッガーが起動すると思います。\\
+\\
+起動したら、以下画像のようになるかと思います。\\
+\\
+ブレークポイントで止まると思いますので、止まったら（BveTs.exeが応答しなくなったら）VisualStadioのウインドウに移動し、左下を御覧ください。\\
+すると、おそらく現在のpower,breakの値が表示されると思います。（通常のシナリオなら、powerは0,breakは非常ブレーキの値に）
 
 %{\large サンプルプラグインをビルドしてみる}
 %先ほどのテンプレートは一旦置いといて、まずはサンプルプラグインをビルドしてみましょう。\\
