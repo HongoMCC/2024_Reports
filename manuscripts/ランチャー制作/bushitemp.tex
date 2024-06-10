@@ -57,12 +57,12 @@
   breaklines=true,
   columns=[l]{fullflexible},
   numbers=left,
-  xrightmargin=0zw,
-  xleftmargin=0zw,
+  xrightmargin=1zw,
+  xleftmargin=1zw,
   numberstyle={\scriptsize},
   stepnumber=1,
   numbersep=1zw,
-  lineskip=0.5ex
+  lineskip=0.5ex,
 }
 \renewcommand{\lstlistingname}{リスト}
 
@@ -94,9 +94,9 @@
 \thispagestyle{empty}
 
 % ここではページごとに段組しています。大きく画像を表示したいときなどは以下を　\begin{multicols}{3} 、\end{multicols}のように変更すると文章が終わった直後から空白になります
-\begin{multicols*}{3}
 
 % 以下本文
+\begin{multicols}{3}
 麻布の物理部無線班の部誌にUnityのコードエディターはVScodeみたいな事書かれてて憤慨しました。再びT.wattzです。（MacならわからんでもないけどWindowsならどっからどう考えてもVisualStudioですよねぇ(\#\textasciicircum$ \omega$\textasciicircum)\\
 　それはさておき、AtsEXはニッチで複雑怪奇な話題だったのですが、今回はC\#プログラミングの定番であるUnityを使ってゲームランチャーを作っていきます!（半分筆者の日記みたいなものですが）\\
 リポジトリはgithub.com/\\
@@ -121,6 +121,7 @@ cydiawaltz/GameLuncher2024 にあるのでどうぞ御覧ください。Unityは
   \includegraphics[width=5cm]{3.png}
   \caption{カメラを設置。}
 \end{figure}
+\end{multicols}
 \begin{lstlisting}[caption=MoveNext.cs]
 \\usingディレクティブ、クラス名とかは省略。
       public float speed;//移動する速度
@@ -166,6 +167,7 @@ cydiawaltz/GameLuncher2024 にあるのでどうぞ御覧ください。Unityは
           }
       }
 \end{lstlisting}
+\begin{multicols*}{3}
 （うわっ長っ、先が思いやられるなコレ）\\
 このスクリプトを回転する物体（MainCamera）にアタッチし、インスペクタに諸々の情報を入力しましょう。\\
 \begin{figure}[H]
@@ -267,7 +269,8 @@ bairituの値は現物合わせで調整しました。(解像度が1920*1080で
   }
 \end{lstlisting}
 あんまり綺麗なコードじゃないですね...精進します。先ほどと同じように倍率の値を設定すると解像度に関わらずいい感じの見た目になります。\\
-最後をnew Vector2(this.transform.position.x,posHeight)とするとxの値が毎フレームごとにどんどん増えていくんですよねぇ...なんでだろ。\\
+最後を\\new Vector2(this.transform.position\\.x,posHeight)\\
+とするとxの値が毎フレームごとにどんどん増えていくんですよねぇ...なんでだろ。\\
 UIも実装したので、メインディッシュであるアプリ起動の実装に移ります。\\
 \begin{lstlisting}[caption=CallApps.cs]
   using UnityEngine;
@@ -316,6 +319,7 @@ UIも実装したので、メインディッシュであるアプリ起動の実
 これを呼び出すとファイルを開くことができます。便利。ちなみにProcessStartInfoってのを叩くと他にも引数を指定したりいろいろできるのですが、こちらについては今回あまり関係ないので割愛。(「MetroDrive 日比谷編」付属のコンポーネントインストーラも引数付きで起動してるのでサイレントインストールが使えてます。)\\
 インスペクタからisNeedQuit（負荷の大きいゲームとかフルスクリーンのゲーム等でtrue）、isHTML（HTMLゲームでtrue）とかを設定します。起動は伝統に従ってZでアプリ起動としました。\\
 半ページ残ってるのでプレイ画面の軽量化でもやりましょうか。\\
+\end{multicols*}
 \begin{lstlisting}[caption=Monitor.cs]
   public GameObject[] monitors;//monitors[0]には何も淹れない
   public GameObject offMonitorsL;
@@ -361,6 +365,7 @@ UIも実装したので、メインディッシュであるアプリ起動の実
       }
   }
 \end{lstlisting}
+\begin{multicols}{3}
 これで見えてるオブジェクトだけがSetActive(true)されるようになりました。満足。\\
 他にもテクスチャ圧縮とかコライダーの削除とかで軽量化をいろいろ頑張りました。偉い。\\
 あとはゲームです。さぁ、これが読まれているときにゲームはできているのでしょうか....\\
@@ -373,6 +378,5 @@ UIも実装したので、メインディッシュであるアプリ起動の実
 %\begin{lstlisting}[caption=Sample]
 %mes "hello, world!"
 %\end{lstlisting}
-
-\end{multicols*}
+\end{multicols}
 \end{document}
