@@ -299,6 +299,20 @@ MapPlugin.csに戻って下さい。そして、コードの左側をクリッ�
 \\
 ブレークポイントで止まると思いますので、止まったら（BveTs.exeが応答しなくなったら）VisualStadioのウインドウに移動し、左下を御覧ください。\\
 すると、おそらく現在のpower,breakの値が表示されると思います。（通常のシナリオなら、powerは0,breakは非常ブレーキの値に）
+では、早速これを反映するUIを作成していきましょう。\\
+まずはDirectXを最低限触ります。NugetよりLib.Harmony,ObjectiveHarmonyPatch,SlimDXをインストールし、usingディレクティブにはFastMember,TypeWrapping,ObjectiveHarmonyPatchを追加して下さい。\\
+\begin{lstlisting}[caption= MapPluginMain()]
+  ClassMemberSet assistantDrawerMembers = BveHacker.BveTypes.GetClassInfoOf<AssistantDrawer>();
+  FastMethod drawMethod = assistantDrawerMembers.GetSourceMethodOf(nameof(AssistantDrawer.Draw));
+  HarmonyPatch drawPatch = HarmonyPatch.Patch(Name, drawMethod.Source, PatchType.Prefix);
+  drawPatch.Invoked += (sender, e) =>
+  {
+    //ここに実際の処理を書く
+  };
+\end{lstlisting}
+このコードは、BVE本体にパッチを当てるもので、BveHacker.BveTypes.GetClassInfoOf<AssistantDrawer>()ではBVE本体の補助表示のコードに対するものです。\\
+つまり、これを唱えれば補助表示の位置(運転台よりも手前)に描画することが可能という訳です。\\
+
 
 %{\large サンプルプラグインをビルドしてみる}
 %先ほどのテンプレートは一旦置いといて、まずはサンプルプラグインをビルドしてみましょう。\\
