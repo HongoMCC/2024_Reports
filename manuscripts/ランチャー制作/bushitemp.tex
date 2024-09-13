@@ -87,7 +87,7 @@
 
 % =タイトル=
 \title{Unityで文化祭用ゲームランチャーを作ろう}
-\author{T.Wattz}
+\author{Wattz麻呂}
 \date{\today}
 \maketitle
 % 初めのページのページ番号を削除(\maketitleの影響を回避)
@@ -99,9 +99,9 @@
 \begin{multicols}{3}
 麻布の物理部無線班の部誌にUnityのコードエディターはVScodeみたいな事書かれてて憤慨しました。再びT.wattzです。（MacならわからんでもないけどWindowsならどっからどう考えてもVisualStudioですよねぇ(\#\textasciicircum$ \omega$\textasciicircum)\\
 　それはさておき、AtsEXはニッチで複雑怪奇な話題だったのですが、今回はC\#プログラミングの定番であるUnityを使ってゲームランチャーを作っていきます!（半分筆者の日記みたいなものですが）\\
-リポジトリはgithub.com/\\
-cydiawaltz/GameLuncher2024 にあるのでどうぞ御覧ください。Unityは2022.3.2f1が必要です。\\
-また無Asset主義者なので基本的にアセットは登場しないと思いますのでご安心下さい。\\
+リポジトリはgithub.com/\\cydiawaltz/GameLuncher2024 にあるのでどうぞ御覧ください。Unityは2022.3.2f1が必要です。\\
+あと、スクリプト内のところどころで括弧の付け方が気持ち悪いですが、紙面上の都合ですのでご了承ください。\\
+%また無Asset主義者なので基本的にアセットは登場しないと思いますのでご安心下さい。\\
 \\
 まずはデザインを決めます。斯々然々でそこらへんに落ちてたPS2ソフト「ナムコミュージアム アーケードHits\verb|!|」をパクることに決定しました。（以下画像）\\
 \begin{figure}[H]
@@ -121,15 +121,14 @@ cydiawaltz/GameLuncher2024 にあるのでどうぞ御覧ください。Unityは
   \includegraphics[width=5cm]{3.png}
   \caption{カメラを設置。}
 \end{figure}
-\end{multicols}
 \begin{lstlisting}[caption=MoveNext.cs]
 \\usingディレクティブ、クラス名とかは省略。
       public float speed;//移動する速度
-      public int allObjects;//置いているゲームの総数
-      public GameObject center;//真ん中（今回は原点）にあるGameObject
+      public int allObjects;//ゲームの総数
+      public GameObject center;//回転の中心
       public int index;
       public int moveAngle;//回転角
-      float moveSeconds;//回転する秒数（内部演算用）
+      float moveSeconds;//回転する秒数
       public float currentAngle;//現在の角度
       void Start()
       {
@@ -138,16 +137,13 @@ cydiawaltz/GameLuncher2024 にあるのでどうぞ御覧ください。Unityは
           moveSeconds = moveAngle/speed;//移動時間を設定
           currentAngle = 0f;//位置を初期化
       }
-      void Update()
-      {
-          if(Input.GetKeyDown(KeyCode.RightArrow))
-          {
+      void Update(){
+          if(Input.GetKeyDown(KeyCode.RightArrow)){
               StartCoroutine(Move(-speed));
               index++;
               currentAngle = currentAngle+moveAngle;
           }
-          if(Input.GetKeyDown(KeyCode.LeftArrow))
-          {
+          if(Input.GetKeyDown(KeyCode.LeftArrow)){
               StartCoroutine(Move(speed));
 
               if(index == 0){SceneManager.LoadScene("HideScene");}//イースターエッグ
@@ -155,11 +151,9 @@ cydiawaltz/GameLuncher2024 にあるのでどうぞ御覧ください。Unityは
               currentAngle = currentAngle-moveAngle;
           }
       }
-      public IEnumerator Move(float speed)
-      {
+      public IEnumerator Move(float speed){
           float timer = 0f;
-          while (timer < moveSeconds)
-          {
+          while (timer < moveSeconds){
               transform.RotateAround(center.transform.position,new Vector3(0,1,0), speed);//これを唱えると第一引数(Vector3型)の位置を中心に回転します。
               //center.transform.positionは普通にVector3.zeroでいいです。
               timer ++;
@@ -167,6 +161,7 @@ cydiawaltz/GameLuncher2024 にあるのでどうぞ御覧ください。Unityは
           }
       }
 \end{lstlisting}
+\end{multicols}
 \begin{multicols*}{3}
 （うわっ長っ、先が思いやられるなコレ）\\
 このスクリプトを回転する物体（MainCamera）にアタッチし、インスペクタに諸々の情報を入力しましょう。\\
@@ -178,7 +173,6 @@ cydiawaltz/GameLuncher2024 にあるのでどうぞ御覧ください。Unityは
 これでオブジェクトを回転できました。へい。見づらいので紙版でご覧の方はpdf版で見るほうがいいかもしれません。まぁ、大したことやってる写真でもないのでシカトしてもらっても構いません。\\
 次はUIにしましょうかねぇ。ではまたクソ長コードを御覧ください。\\
 \begin{lstlisting}[caption=UIDraw.cs]
-  //再びusingとクラスの記述は省略
   public MoveNext moveNext;
   public int index;
   public bool isDisplay;//表示・非表示
@@ -189,14 +183,12 @@ cydiawaltz/GameLuncher2024 にあるのでどうぞ御覧ください。Unityは
   public Image buttonComponent;
   public Sprite[] buttonImage;
   public GameObject info;
-  void Start ()
-  {
+  void Start (){
       imageComponent = imageObject.GetComponent<Image>();
       buttonComponent = buttonObject.GetComponent<Image>();
       isDisplay = true;
   }
-  void Update ()
-  {
+  void Update (){
       index = moveNext.index;
       if(isDisplay == true)
       {
@@ -210,8 +202,7 @@ cydiawaltz/GameLuncher2024 にあるのでどうぞ御覧ください。Unityは
           info.SetActive(false);
       }
   }
-  public void OnClick ()
-  {
+  public void OnClick (){
       isDisplay = !isDisplay;
   }
 \end{lstlisting}
@@ -229,7 +220,7 @@ cydiawaltz/GameLuncher2024 にあるのでどうぞ御覧ください。Unityは
   \includegraphics[width=5.5cm]{6.png}
   \caption{非表示にもできます。}
 \end{figure}
-次に解像度に応じて諸々を調整します。いらない？ウインドウの大きさいじれるし、多少はね？\\
+次に解像度に応じて諸々を調整します。いらない？まぁ、ウインドウの大きさいじれるし、多少はね？\\
 \begin{lstlisting}[caption=DisplaySet.cs]
   public float bairitu;//倍率に応じて画像の大きさを変更
   public bool isSetWidth;//縦に合わせる(インスペクターで選んでね♡)
@@ -238,13 +229,10 @@ cydiawaltz/GameLuncher2024 にあるのでどうぞ御覧ください。Unityは
       int width = Screen.width;
       int height = Screen.height;
       RectTransform rectTransform = GetComponent<RectTransform>();//対象のオブジェクトにアタッチ
-      float screenRatio = (float)width / height;
-      if (isSetWidth)
-      {
+      if (isSetWidth){
           rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, width / bairitu);
       }
-      else
-      {
+      else{
           rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, height / bairitu);
       }
   }
@@ -257,12 +245,10 @@ bairituの値は現物合わせで調整しました。(解像度が1920*1080で
 \begin{lstlisting}[caption=SetInfoTex.cs]
   RectTransform rectTransform;
   public int heightBairitu;
-  void Start()
-  {
+  void Start(){
       rectTransform = this.GetComponent<RectTransform>();
   }
-  void Update()
-  {
+  void Update(){
       int height = Screen.height;
       float posHeight = height / heightBairitu;
       rectTransform.anchoredPosition = new Vector2(0,posHeight);
@@ -285,32 +271,26 @@ UIも実装したので、メインディッシュであるアプリ起動の実
       public bool isHTML;
       public bool isNeedQuit;
       public int currentNum;
-      private void Update()
-      {
+      private void Update(){
           index = moveNext.index%moveNext.allObjects;
           if(isHTML){ type = "html";}
           else { type = "exe"; }
           exepath = Path.Combine(Application.dataPath, "../Apps/GAME" + index + "/main." + type);
           readmePath = Path.Combine(Application.dataPath, "../Apps/GAME" + index + "/readme.txt");
-          if (Input.GetKeyDown(KeyCode.Z)&&index == currentNum) 
-          {
+          if (Input.GetKeyDown(KeyCode.Z)&&index == currentNum) {
             LaunchApp(isHTML, isNeedQuit);
           }
-          if(Input.GetKeyDown(KeyCode.X)&&index == currentNum)
-          {
+          if(Input.GetKeyDown(KeyCode.X)&&index == currentNum){
             LaunchReadMe();
           }
       }
-      public void LaunchApp(bool isHTML,bool isNeedQuit)
-      {
+      public void LaunchApp(bool isHTML,bool isNeedQuit){
           Process.Start(exepath);
-          if(isNeedQuit == true) 
-          {
+          if(isNeedQuit == true) {
             Application.Quit();
           }
       }
-      public void LaunchReadMe()
-      {
+      public void LaunchReadMe(){
         Process.Start(readmePath);
       }
   }
@@ -319,32 +299,26 @@ UIも実装したので、メインディッシュであるアプリ起動の実
 これを呼び出すとファイルを開くことができます。便利。ちなみにProcessStartInfoってのを叩くと他にも引数を指定したりいろいろできるのですが、こちらについては今回あまり関係ないので割愛。(「MetroDrive 日比谷編」付属のコンポーネントインストーラも引数付きで起動してるのでサイレントインストールが使えてます。)\\
 インスペクタからisNeedQuit（負荷の大きいゲームとかフルスクリーンのゲーム等でtrue）、isHTML（HTMLゲームでtrue）とかを設定します。起動は伝統に従ってZでアプリ起動としました。\\
 半ページ残ってるのでプレイ画面の軽量化でもやりましょうか。\\
-\end{multicols*}
 \begin{lstlisting}[caption=Monitor.cs]
-  public GameObject[] monitors;//monitors[0]には何も淹れない
+  public GameObject[] monitors;//無計画な実装のせいで1から始まる
   public GameObject offMonitorsL;
   public GameObject offMonitorsR;
   public MoveNext moveNext;//MoveNext.cs
   public GameObject[] beginOffMonitor;//めんどくさいので最初に描画しないモニターは手動で設定したれ
   public int canSee;//表示されるモニターの値
-  void Start()
-  {
+  void Start(){
       monitors[(moveNext.index%moveNext.allObjects)].SetActive(true);
       canSee = (90 / moveNext.moveAngle);//横90°+1で開始時に白飛びするのを防止
-      foreach(GameObject beginOff in beginOffMonitor)
-      {
+      foreach(GameObject beginOff in beginOffMonitor){
           beginOff.SetActive(false);
       }
-      foreach (GameObject monitor in monitors)
-      {
+      foreach (GameObject monitor in monitors){
           monitor.GetComponent<VideoPlayer>().Pause();//全部開始時には一時停止
       }
       monitors[moveNext.index % moveNext.allObjects].GetComponent<VideoPlayer>().Play();
   }
-  void Update()
-  {
-      if(Input.GetKeyDown(KeyCode.RightArrow))
-      {
+  void Update(){
+      if(Input.GetKeyDown(KeyCode.RightArrow)){
           monitors[((moveNext.index-canSee-1)%moveNext.allObjects)].SetActive(false);
           monitors[((moveNext.index+canSee)%moveNext.allObjects)].SetActive(true);
           foreach(GameObject monitor in monitors)//一旦全部オフにする
@@ -353,8 +327,7 @@ UIも実装したので、メインディッシュであるアプリ起動の実
           }
           monitors[moveNext.index % moveNext.allObjects].GetComponent<VideoPlayer>().Play();//今表示されてるモニターだけOnにする
       }
-      if (Input.GetKeyDown(KeyCode.LeftArrow))
-      {
+      if (Input.GetKeyDown(KeyCode.LeftArrow)){
           monitors[((moveNext.index+canSee+1)%moveNext.allObjects)].SetActive(false);
           monitors[((moveNext.index-canSee)%moveNext.allObjects)].SetActive(true);
           foreach (GameObject monitor in monitors)
@@ -365,7 +338,6 @@ UIも実装したので、メインディッシュであるアプリ起動の実
       }
   }
 \end{lstlisting}
-\begin{multicols}{3}
 これで見えてるオブジェクトだけがSetActive(true)されるようになりました。満足。\\
 他にもテクスチャ圧縮とかコライダーの削除とかで軽量化をいろいろ頑張りました。偉い。\\
 あとはゲームです。さぁ、これが読まれているときにゲームはできているのでしょうか....\\
@@ -374,9 +346,10 @@ UIも実装したので、メインディッシュであるアプリ起動の実
   \includegraphics[width=5.5cm]{7.png}
   \caption{とりあえずテストは成功。}
 \end{figure}
+\end{multicols*}
 % ソースコードを挿入するときは以下のようにしてください
 %\begin{lstlisting}[caption=Sample]
 %mes "hello, world!"
 %\end{lstlisting}
-\end{multicols}
+%\end{multicols}
 \end{document}
